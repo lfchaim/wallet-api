@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+logging:
+  level:
+    com.walletapi: info
+
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      authentication-database: admin
+      database: walletdb
+      username: dbuser
+      password: userpass
+      auto-index-creation: true
