@@ -1,5 +1,6 @@
 package com.walletapi.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,17 @@ public class WalletService {
         return getWalletByUserId(userId).map(Wallet::getBalance).orElse(0.0);
     }
 
+    public List<WalletEvent> getStatement(String userId) {
+    	List<WalletEvent> listEvent = null;
+    	if( userId == null ) {
+    		listEvent = walleteventRepository.findAll();
+    	} else {
+    		Wallet wallet = getWalletByUserId(userId).orElseThrow(() -> new RuntimeException("Wallet not found"));
+    		listEvent = walleteventRepository.findByWalletId(wallet.getId());
+    	}
+    	return listEvent;
+    }
+    
     public Wallet depositFunds(String userId, double amount) {
         Wallet wallet = getWalletByUserId(userId).orElseThrow(() -> new RuntimeException("Wallet not found"));
         
@@ -45,7 +57,7 @@ public class WalletService {
     public Wallet withdrawFunds(String userId, double amount) {
         Wallet wallet = getWalletByUserId(userId).orElseThrow(() -> new RuntimeException("Wallet not found"));
         
-        WalletEvent event = new WalletEvent(wallet.getId(), amount);
+        WalletEvent event = new WalletEvent(wallet.getId(), -amount);
         walleteventRepository.save(event);
         
         if (wallet.getBalance() < amount) {
